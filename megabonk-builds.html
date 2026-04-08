@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Megabonk Build Reference</title>
+  <style>
+    :root {
+      --bg-0: #1a1a2e;
+      --bg-1: #16213e;
+      --bg-2: #0f3460;
+      --jump-bar-height: 0px;
+      --panel: rgba(15, 52, 96, 0.78);
+      --panel-soft: rgba(8, 13, 29, 0.66);
+      --panel-strong: rgba(11, 21, 44, 0.9);
+      --ink: #f8f9fa;
+      --muted: #aeb8d4;
+      --accent-1: #9d4edd;
+      --accent-2: #3a86ff;
+      --accent-3: #ff006e;
+      --line: rgba(157, 78, 221, 0.22);
+      --line-strong: rgba(58, 134, 255, 0.24);
+      --tag-bg: rgba(255, 255, 255, 0.08);
+      --tag-line: rgba(157, 78, 221, 0.24);
+      --shadow: rgba(0, 0, 0, 0.42);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(157, 78, 221, 0.18), transparent 26%),
+        radial-gradient(circle at top right, rgba(58, 134, 255, 0.16), transparent 24%),
+        linear-gradient(180deg, var(--bg-0) 0%, var(--bg-1) 28%, #13162b 100%);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.18;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+      background-size: 28px 28px;
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.08));
+    }
+
+    main {
+      width: min(1460px, calc(100% - 24px));
+      margin: 0 auto;
+      padding: 14px 0 calc(var(--jump-bar-height) + 28px);
+      position: relative;
+      z-index: 1;
+    }
+
+    .topbar {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: auto minmax(280px, 520px);
+      align-items: center;
+      padding: 14px 18px;
+      margin-bottom: 12px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: linear-gradient(180deg, rgba(15, 52, 96, 0.72), rgba(22, 33, 62, 0.84));
+      backdrop-filter: blur(14px);
+      box-shadow: 0 18px 36px -28px var(--shadow);
+    }
+
+    .brand {
+      min-width: 0;
+    }
+
+    .brand-mark,
+    .brand-copy,
+    .card-title,
+    .card-meta,
+    .row-name,
+    .row-hint,
+    .result-count,
+    .entry-name,
+    .tag,
+    .source-link,
+    .jump-link,
+    .empty-state,
+    .no-results,
+    .sr-only {
+      margin: 0;
+    }
+
+    .brand-mark {
+      display: inline-block;
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-2), var(--accent-3));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .brand-copy {
+      margin-top: 4px;
+      font-size: 0.84rem;
+      color: var(--muted);
+    }
+
+    .search-panel {
+      display: grid;
+      gap: 8px;
+      justify-items: end;
+    }
+
+    .search-shell {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      width: min(100%, 460px);
+      min-height: 46px;
+      padding: 0 14px;
+      border: 1px solid rgba(157, 78, 221, 0.28);
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(9, 14, 29, 0.86), rgba(18, 28, 54, 0.92));
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.06),
+        0 0 0 1px rgba(58, 134, 255, 0.06);
+    }
+
+    .search-shell:focus-within {
+      border-color: rgba(58, 134, 255, 0.46);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 0 0 1px rgba(58, 134, 255, 0.16),
+        0 0 28px -16px rgba(58, 134, 255, 0.78);
+    }
+
+    .search-icon {
+      color: #93a9ff;
+      font-size: 0.96rem;
+      line-height: 1;
+    }
+
+    .search-input {
+      width: 100%;
+      min-width: 0;
+      height: 44px;
+      padding: 0;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--ink);
+      font: inherit;
+    }
+
+    .search-input::placeholder {
+      color: #7f90b9;
+    }
+
+    .result-count {
+      display: none;
+    }
+
+    .jump-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      transform: none;
+      z-index: 7;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: flex-start;
+      justify-content: flex-start;
+      width: 100%;
+      max-width: none;
+      max-height: none;
+      overflow: visible;
+      padding: 12px max(12px, calc((100vw - 1460px) / 2 + 12px));
+      margin: 0;
+      border-top: 1px solid rgba(157, 78, 221, 0.22);
+      background: linear-gradient(180deg, rgba(7, 11, 24, 0.98), rgba(9, 14, 30, 0.99));
+      backdrop-filter: blur(14px);
+      box-shadow: 0 -16px 32px -28px var(--shadow);
+    }
+
+    .jump-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 10px;
+      width: auto;
+      min-height: 30px;
+      padding: 6px 12px;
+      border: 1px solid rgba(157, 78, 221, 0.16);
+      border-radius: 999px;
+      background: rgba(15, 52, 96, 0.48);
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 0.84rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .jump-icon {
+      width: 40px;
+      height: 40px;
+      flex: 0 0 40px;
+      padding: 5px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.08);
+      object-fit: contain;
+    }
+
+    .jump-link-label {
+      display: inline-block;
+    }
+
+    .jump-link:hover {
+      background: linear-gradient(135deg, rgba(157, 78, 221, 0.22), rgba(58, 134, 255, 0.18));
+      border-color: rgba(58, 134, 255, 0.28);
+    }
+
+    .cards {
+      display: grid;
+      gap: 16px;
+    }
+
+    .character-card {
+      scroll-margin-top: 74px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(15, 52, 96, 0.84), rgba(21, 26, 46, 0.96));
+      box-shadow: 0 22px 42px -34px var(--shadow);
+    }
+
+    .card-header {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(157, 78, 221, 0.16);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015));
+    }
+
+    .character-avatar {
+      width: 64px;
+      height: 64px;
+      padding: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.06);
+      object-fit: contain;
+    }
+
+    .card-title-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 10px;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .card-title {
+      font-size: clamp(1.18rem, 2vw, 1.75rem);
+      line-height: 1.04;
+    }
+
+    .tier-pill,
+    .build-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 4px 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      color: #e8ecff;
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+
+    .build-pill {
+      border-color: rgba(58, 134, 255, 0.2);
+      background: linear-gradient(135deg, rgba(157, 78, 221, 0.18), rgba(58, 134, 255, 0.18));
+    }
+
+    .card-meta {
+      display: none;
+    }
+
+    .source-link {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 0 12px;
+      border: 1px solid rgba(157, 78, 221, 0.24);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 0.84rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .source-link:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(58, 134, 255, 0.28);
+    }
+
+    .rows {
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+    }
+
+    .info-row {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 148px minmax(0, 1fr);
+      align-items: start;
+      padding: 12px;
+      border: 1px solid rgba(157, 78, 221, 0.14);
+      border-radius: 18px;
+      background: rgba(7, 12, 26, 0.28);
+    }
+
+    .row-label {
+      display: grid;
+      gap: 4px;
+      align-content: start;
+      padding-top: 2px;
+    }
+
+    .row-name {
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #93a9ff;
+    }
+
+    .row-hint {
+      display: none;
+    }
+
+    .row-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: flex-start;
+      min-width: 0;
+    }
+
+    .entry {
+      display: inline-flex;
+      flex: 0 1 auto;
+      align-items: center;
+      gap: 10px;
+      width: fit-content;
+      min-width: 0;
+      max-width: min(100%, 320px);
+      min-height: 58px;
+      padding: 8px 10px;
+      border: 1px solid rgba(157, 78, 221, 0.18);
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(157, 78, 221, 0.14), rgba(58, 134, 255, 0.12));
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    }
+
+    .entry-icon {
+      width: 40px;
+      height: 40px;
+      flex: 0 0 40px;
+      padding: 5px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.08);
+      object-fit: contain;
+    }
+
+    .entry-copy {
+      min-width: 0;
+    }
+
+    .entry-name {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 0.92rem;
+      line-height: 1.15;
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      max-width: 100%;
+      padding: 4px 8px;
+      border: 1px solid var(--tag-line);
+      border-radius: 999px;
+      background: rgba(10, 16, 34, 0.72);
+      color: #dce8ff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      line-height: 1.2;
+      white-space: normal;
+    }
+
+    .empty-state {
+      padding: 10px 12px;
+      border: 1px dashed rgba(157, 78, 221, 0.18);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.45;
+    }
+
+    .no-results {
+      padding: 18px 20px;
+      border: 1px solid rgba(157, 78, 221, 0.18);
+      border-radius: 18px;
+      background: rgba(10, 16, 34, 0.74);
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 1100px) {
+      .topbar {
+        grid-template-columns: 1fr;
+      }
+
+      .search-panel {
+        justify-items: stretch;
+      }
+
+      .search-shell {
+        width: 100%;
+      }
+
+      .card-header {
+        grid-template-columns: auto minmax(0, 1fr);
+      }
+
+      .source-link {
+        grid-column: 1 / -1;
+        justify-self: start;
+      }
+    }
+
+    @media (max-width: 880px) {
+      .info-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 680px) {
+      main {
+        width: min(100% - 18px, 1460px);
+        padding-top: 10px;
+        padding-bottom: calc(var(--jump-bar-height) + 18px);
+      }
+
+      .topbar,
+      .card-header,
+      .rows {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      .jump-bar {
+        padding: 10px 9px;
+      }
+
+      .character-avatar {
+        width: 56px;
+        height: 56px;
+      }
+
+      .entry {
+        max-width: none;
+        min-width: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="topbar">
+      <div class="brand">
+        <p class="brand-mark">Megabonk.org</p>
+        <p class="brand-copy">Quick-reference rows for every character build.</p>
+      </div>
+      <div class="search-panel">
+        <label class="sr-only" for="character-search">Search builds</label>
+        <div class="search-shell">
+          <span class="search-icon" aria-hidden="true">⌕</span>
+          <input class="search-input" id="character-search" type="search" placeholder="Search character, build, weapon, tome, or item" autocomplete="off">
+        </div>
+        <div class="result-count" id="result-count"></div>
+      </div>
+    </header>
+
+    <section class="cards" id="cards" aria-live="polite"></section>
+    <nav class="jump-bar" id="jump-bar" aria-label="Character jump links"></nav>
+  </main>
+
+  <script id="build-data" type="application/json">[{"url":"https://megabonk.org/guides/builds/fox-best-build","characterName":"Fox (Kitsune)","buildTitle":"🦊 Fox Luck Master","tier":"⭐ S-TIER","characterImage":"https://megabonk.org/images/guides/characters/Fox.png","coreWeapons":[{"name":"Revolver","tag":"🔫 Core DPS","image":"https://megabonk.org/images/database/weapons/Revolver.png"},{"name":"Bow","tag":"🏹 Piercing","image":"https://megabonk.org/images/database/weapons/Bow.png"},{"name":"Sniper Rifle","tag":"🎯 Single Target","image":"https://megabonk.org/images/database/weapons/Sniper.png"},{"name":"Lightning Staff","tag":"⚡ Wave Clear","image":"https://megabonk.org/images/database/weapons/Lightning_Staff.png"},{"name":"Aegis","tag":"🛡️ Defense","image":"https://megabonk.org/images/database/weapons/Aegis.png"},{"name":"Aura","tag":"🛡️ Close Defense","image":"https://megabonk.org/images/database/weapons/Aura.png"}],"tomePriority":[{"name":"Quantity Tome","tag":"🔥 High Impact","image":"https://megabonk.org/images/Tomes/Quantity_Tome.png"},{"name":"Damage Tome","tag":"💥 Scaling","image":"https://megabonk.org/images/Tomes/Damage_Tome.png"},{"name":"Cooldown Tome","tag":"⏱️ Uptime","image":"https://megabonk.org/images/Tomes/Cooldown_Tome.png"},{"name":"Luck Tome","tag":"🍀 Fox Synergy","image":"https://megabonk.org/images/Tomes/Luck_Tome.png"},{"name":"Shield Tome","tag":"🛡️ Survival","image":"https://megabonk.org/images/Tomes/Shield_Tome.png"},{"name":"XP Tome","tag":"✨ Early Tempo","image":"https://megabonk.org/images/Tomes/XP_Tome.png"}],"keyItems":[{"name":"Clover","tag":"🍀 +7.5% Luck","image":"https://megabonk.org/images/Items/Item_Clover.png"},{"name":"Battery","tag":"⚡ +8% Attack Speed","image":"https://megabonk.org/images/Items/Item_Battery.png"},{"name":"Forbidden Juice","tag":"🎯 +10% Crit Chance","image":"https://megabonk.org/images/Items/Item_Forbidden_Juice.png"},{"name":"Tactical Glasses","tag":"📈 +20% vs >90% HP","image":"https://megabonk.org/images/Items/Item_Tactical_Glasses.png"},{"name":"Eagle Claw","tag":"🦅 +66% vs Airborne","image":"https://megabonk.org/images/Items/Item_Eagle_Claw.png"},{"name":"Mirror","tag":"🪞 Reflect + i-frames","image":"https://megabonk.org/images/Items/Item_Mirror.png"},{"name":"Phantom Shroud","tag":"🌀 Evade Buff","image":"https://megabonk.org/images/Items/Item_Phantom_Shroud.png"},{"name":"Power Gloves","tag":"💥 On-hit Blast","image":"https://megabonk.org/images/Items/Item_Power_Gloves.png"},{"name":"Time Bracelet","tag":"⏳ +8% XP Gain","image":"https://megabonk.org/images/Items/Item_Time_Bracelet.png"}]},{"url":"https://megabonk.org/guides/builds/robinette-best-build","characterName":"Robinette","buildTitle":"🏹 Robinette Piercing Arrows","tier":"⭐ A-TIER","characterImage":"https://megabonk.org/images/guides/characters/Robinette.png","coreWeapons":[{"name":"Bananarang","tag":"Core","image":"https://megabonk.org/images/database/weapons/Bananarang.png"},{"name":"Aegis","tag":"Core","image":"https://megabonk.org/images/database/weapons/Aegis.png"},{"name":"Dice","tag":"Popular","image":"https://megabonk.org/images/database/weapons/Dice.png"},{"name":"Revolver","tag":"Flex","image":"https://megabonk.org/images/database/weapons/Revolver.png"}],"tomePriority":[{"name":"Quantity Tome","tag":"Early","image":"https://megabonk.org/images/Tomes/Quantity_Tome.png"},{"name":"Cooldown Tome","tag":"Early","image":"https://megabonk.org/images/Tomes/Cooldown_Tome.png"},{"name":"Gold Tome","tag":"1-2 Copies","image":"https://megabonk.org/images/Tomes/Golden_Tome.png"},{"name":"Damage Tome","tag":"Mid","image":"https://megabonk.org/images/Tomes/Damage_Tome.png"},{"name":"Shield Tome","tag":"Mid/Late","image":"https://megabonk.org/images/Tomes/Shield_Tome.png"}],"keyItems":[{"name":"Golden Shield","tag":"Economy","image":"https://megabonk.org/images/Items/Item_Golden_Shield.png"},{"name":"Battery","tag":"+8% AS","image":"https://megabonk.org/images/Items/Item_Battery.png"},{"name":"Gym Sauce","tag":"+10%/stack","image":"https://megabonk.org/images/Items/Item_Gym_Sauce.png"},{"name":"Beefy Ring","tag":"HP -> DMG","image":"https://megabonk.org/images/Items/Item_Beefy_Ring.png"},{"name":"Credit Cards (Red & Green)","tag":"Chests","image":"https://megabonk.org/images/Items/Item_Credit_Card_Red.png"},{"name":"Golden Glove","tag":"Filler","image":"https://megabonk.org/images/Items/Item_Golden_Glove.png"},{"name":"Clover","tag":"Luck","image":"https://megabonk.org/images/Items/Item_Clover.png"},{"name":"Power Gloves","tag":"Damage","image":"https://megabonk.org/images/Items/Item_Power_Gloves.png"},{"name":"Sucky Magnet","tag":"XP Vac","image":"https://megabonk.org/images/Items/Item_Sucky_Magnet.png"}]},{"url":"https://megabonk.org/guides/builds/ninja-best-build","characterName":"Ninja","buildTitle":"🥷 Ninja Critical Assassin","tier":"⭐ S-TIER","characterImage":"https://megabonk.org/images/guides/characters/Ninja.png","coreWeapons":[{"name":"Katana","tag":"Primary Weapons","image":"https://megabonk.org/images/database/weapons/Katana.png"},{"name":"Aegis","tag":"Primary Weapons","image":"https://megabonk.org/images/database/weapons/Aegis.png"},{"name":"Dexecutioner","tag":"Primary Weapons","image":"https://megabonk.org/images/database/weapons/Dexecutioner.png"},{"name":"Aura","tag":"Primary Weapons","image":"https://megabonk.org/images/database/weapons/Aura.png"}],"tomePriority":[{"name":"Size Tome","tag":"Essential Tomes","image":"https://megabonk.org/images/Tomes/Size_Tome.png"},{"name":"Quantity Tome","tag":"Essential Tomes","image":"https://megabonk.org/images/Tomes/Quantity_Tome.png"},{"name":"Damage Tome","tag":"Essential Tomes","image":"https://megabonk.org/images/Tomes/Damage_Tome.png"},{"name":"Cooldown Tome","tag":"Essential Tomes","image":"https://megabonk.org/images/Tomes/Cooldown_Tome.png"},{"name":"Precision Tome","tag":"Essential Tomes","image":"https://megabonk.org/images/Tomes/Precision_Tome.png"},{"name":"Shield Tome","tag":"Essential Tomes","image":"https://megabonk.org/images/Tomes/Shield_Tome.png"}],"keyItems":[{"name":"Turbo Skates","tag":"Mobility","image":"https://megabonk.org/images/Items/Item_Turbo_Skates.png"},{"name":"Turbo Socks","tag":"Mobility","image":"https://megabonk.org/images/Items/Item_Turbo_Socks.png"},{"name":"Speed Boi","tag":"Mobility","image":"https://megabonk.org/images/Items/Item_Speed_Boi.png"},{"name":"Gym Sauce","tag":"Damage & Crit","image":"https://megabonk.org/images/Items/Item_Gym_Sauce.png"},{"name":"Clover","tag":"Damage & Crit","image":"https://megabonk.org/images/Items/Item_Clover.png"},{"name":"Power Gloves","tag":"Damage & Crit","image":"https://megabonk.org/images/Items/Item_Power_Gloves.png"},{"name":"Brass Knuckles","tag":"Damage & Crit","image":"https://megabonk.org/images/Items/Item_Brass_Knuckles.png"},{"name":"Beefy Ring","tag":"Defense","image":"https://megabonk.org/images/Items/Item_Beefy_Ring.png"},{"name":"Chonkplate","tag":"Defense","image":"https://megabonk.org/images/Items/Item_Chonkplate.png"},{"name":"Mirror","tag":"Defense","image":"https://megabonk.org/images/Items/Item_Mirror.png"},{"name":"Time Bracelet","tag":"Utility","image":"https://megabonk.org/images/Items/Item_Time_Bracelet.png"},{"name":"Backpack","tag":"Utility","image":"https://megabonk.org/images/Items/Item_Backpack.png"},{"name":"Golden Shield","tag":"Utility","image":"https://megabonk.org/images/Items/Item_Golden_Shield.png"}]},{"url":"https://megabonk.org/guides/builds/megachad-best-build","characterName":"Megachad","buildTitle":"💪 Megachad Tank Build","tier":"⭐ S-TIER","characterImage":"https://megabonk.org/images/guides/characters/Megachad.png","coreWeapons":[{"name":"Aura","tag":"Mandatory","image":"https://megabonk.org/images/database/weapons/Aura.png"},{"name":"Aegis","tag":"High Priority","image":"https://megabonk.org/images/database/weapons/Aegis.png"},{"name":"Lightning Staff","tag":"Crowd Control","image":"https://megabonk.org/images/database/weapons/Lightning_Staff.png"}],"tomePriority":[{"name":"Damage Tome","tag":"Scaling","image":"https://megabonk.org/images/Tomes/Damage_Tome.png"},{"name":"Cooldown Tome","tag":"Scaling","image":"https://megabonk.org/images/Tomes/Cooldown_Tome.png"},{"name":"Size Tome","tag":"Radius","image":"https://megabonk.org/images/Tomes/Size_Tome.png"},{"name":"XP Tome","tag":"Snowball","image":"https://megabonk.org/images/Tomes/XP_Tome.png"},{"name":"Luck Tome","tag":"Roll Quality","image":"https://megabonk.org/images/Tomes/Luck_Tome.png"},{"name":"Cursed Tome","tag":"Risk/XP","image":"https://megabonk.org/images/Tomes/Cursed_Tome.png"}],"keyItems":[{"name":"Mirror","tag":"Defense","image":"https://megabonk.org/images/Items/Item_Mirror.png"},{"name":"Campfire","tag":"AFK Heal","image":"https://megabonk.org/images/Items/Item_Campfire.png"},{"name":"Medkit","tag":"Regen","image":"https://megabonk.org/images/Items/Item_Medkit.png"},{"name":"Spiky Shield","tag":"Armor Thorns","image":"https://megabonk.org/images/Items/Item_Spiky_Shield.png"},{"name":"Idle Juice","tag":"Stand Still DPS","image":"https://megabonk.org/images/Items/Item_Idle_Juice.png"},{"name":"Sucky Magnet","tag":"XP Flow","image":"https://megabonk.org/images/Items/Item_Sucky_Magnet.png"},{"name":"Golden Shield","tag":"Economy","image":"https://megabonk.org/images/Items/Item_Golden_Shield.png"},{"name":"Chonkplate","tag":"Sustain","image":"https://megabonk.org/images/Items/Item_Chonkplate.png"}]},{"url":"https://megabonk.org/guides/builds/birdo-best-build","characterName":"Birdo","buildTitle":"🐦 Birdo Aerial Assault","tier":"⭐ A-TIER","characterImage":"https://megabonk.org/images/guides/characters/Birdo.png","coreWeapons":[{"name":"Tornado","tag":"🔥 HIGHEST PRIORITY","image":"https://megabonk.org/images/database/weapons/Tornado.png"},{"name":"Lightning Staff","tag":"⚡ HIGH PRIORITY","image":"https://megabonk.org/images/database/weapons/Lightning_Staff.png"},{"name":"Slutty Rocket","tag":"💣 FLEX SLOT","image":"https://megabonk.org/images/database/weapons/SluttyRocket.png"},{"name":"Revolver","tag":"🎯 FLEX SLOT","image":"https://megabonk.org/images/database/weapons/Revolver.png"},{"name":"Flamewalker","tag":"🔥 ALTERNATIVE","image":"https://megabonk.org/images/database/weapons/Flamewalker.png"}],"tomePriority":[{"name":"Size Tome","tag":"🔥 CRITICAL","image":"https://megabonk.org/images/Tomes/Size_Tome.png"},{"name":"Damage Tome","tag":"⚡ HIGH","image":"https://megabonk.org/images/Tomes/Damage_Tome.png"},{"name":"Quantity Tome","tag":"⚡ HIGH","image":"https://megabonk.org/images/Tomes/Quantity_Tome.png"},{"name":"Duration Tome","tag":"🌀 OPTIONAL","image":"https://megabonk.org/images/Tomes/Duration_Tome.png"},{"name":"Progression Core","tag":"✨ FOUNDATION","image":"https://megabonk.org/images/Tomes/XP_Tome.png"}],"keyItems":[{"name":"Turbo Socks","tag":"🔥 ESSENTIAL","image":"https://megabonk.org/images/Items/Item_Turbo_Socks.png"},{"name":"Scarf","tag":"🔥 ESSENTIAL","image":"https://megabonk.org/images/Items/Item_Scarf.png"},{"name":"Clover","tag":"🍀 HIGH VALUE","image":"https://megabonk.org/images/Items/Item_Clover.png"},{"name":"Gym Sauce","tag":"💪 HIGH VALUE","image":"https://megabonk.org/images/Items/Item_Gym_Sauce.png"},{"name":"Battery","tag":"⚡ HIGH VALUE","image":"https://megabonk.org/images/Items/Item_Battery.png"},{"name":"Turbo Skates","tag":"⚙️ SYNERGY","image":"https://megabonk.org/images/Items/Item_Turbo_Skates.png"}]},{"url":"https://megabonk.org/guides/builds/noelle-best-build","characterName":"Noelle","buildTitle":"❄️ Noelle Frost Mage","tier":"🎄 SEASONAL","characterImage":"https://megabonk.org/images/guides/characters/Noelle.png","coreWeapons":[{"name":"Frostwalker","tag":"❄️ CORE WEAPON","image":"https://megabonk.org/images/database/weapons/Frostwalker.png"},{"name":"Lightning Staff","tag":"⚡ ESSENTIAL","image":"https://megabonk.org/images/database/weapons/Lightning_Staff.png"},{"name":"Black Hole","tag":"🌀 HIGH PRIORITY","image":"https://megabonk.org/images/database/weapons/Black_Hole.png"},{"name":"Aura","tag":"🛡️ DEFENSIVE DAMAGE","image":"https://megabonk.org/images/database/weapons/Aura.png"},{"name":"Firestaff","tag":"🔥 ALTERNATIVE","image":"https://megabonk.org/images/database/weapons/Firestaff.png"}],"tomePriority":[{"name":"Size Tome","tag":"❄️ CRITICAL","image":"https://megabonk.org/images/Tomes/Size_Tome.png"},{"name":"Cooldown Tome","tag":"⏱️ HIGH","image":"https://megabonk.org/images/Tomes/Cooldown_Tome.png"},{"name":"Damage Tome","tag":"⚡ HIGH","image":"https://megabonk.org/images/Tomes/Damage_Tome.png"},{"name":"Quantity Tome","tag":"📊 HIGH","image":"https://megabonk.org/images/Tomes/Quantity_Tome.png"},{"name":"Economy: XP + Luck (+ Curse later)","tag":"✨ FOUNDATION","image":"https://megabonk.org/images/Tomes/XP_Tome.png"}],"keyItems":[{"name":"Ice Cube","tag":"❄️ ESSENTIAL","image":"https://megabonk.org/images/Items/Item_Ice_Cube.png"},{"name":"Ice Crystal","tag":"❄️ ESSENTIAL","image":"https://megabonk.org/images/Items/Item_Ice_Crystal.png"},{"name":"Battery","tag":"⚡ HIGH VALUE","image":"https://megabonk.org/images/Items/Item_Battery.png"},{"name":"Gym Sauce","tag":"💪 HIGH VALUE","image":"https://megabonk.org/images/Items/Item_Gym_Sauce.png"},{"name":"Forbidden Juice","tag":"⚗️ GOOD","image":"https://megabonk.org/images/Items/Item_Forbidden_Juice.png"},{"name":"Mirror","tag":"🛡️ DEFENSIVE","image":"https://megabonk.org/images/Items/Item_Mirror.png"}]},{"url":"https://megabonk.org/guides/builds/dicehead-best-build","characterName":"Dicehead","buildTitle":"🎲 Dicehead RNG Chaos","tier":"🎲 RNG META","characterImage":"https://megabonk.org/images/guides/characters/Dicehead.png","coreWeapons":[{"name":"Dice","tag":"🔥 HIGHEST PRIORITY","image":"https://megabonk.org/images/database/weapons/Dice.png"},{"name":"Revolver","tag":"🎯 HIGH PRIORITY","image":"https://megabonk.org/images/database/weapons/Revolver.png"},{"name":"Lightning Staff","tag":"⚡ HIGH PRIORITY","image":"https://megabonk.org/images/database/weapons/Lightning_Staff.png"},{"name":"Black Hole","tag":"🌀 FLEX","image":"https://megabonk.org/images/database/weapons/Black_Hole.png"}],"tomePriority":[{"name":"XP Tome","tag":"✨ CORE","image":"https://megabonk.org/images/Tomes/XP_Tome.png"},{"name":"Luck Tome","tag":"✨ CORE","image":"https://megabonk.org/images/Tomes/Luck_Tome.png"},{"name":"Damage Tome","tag":"💥 HIGH","image":"https://megabonk.org/images/Tomes/Damage_Tome.png"},{"name":"Quantity Tome","tag":"💥 HIGH","image":"https://megabonk.org/images/Tomes/Quantity_Tome.png"},{"name":"Shield / Health","tag":"🛡️ SAFETY","image":"https://megabonk.org/images/Tomes/Shield_Tome.png"}],"keyItems":[{"name":"Medkit","tag":"🔥 ESSENTIAL","image":"https://megabonk.org/images/Items/Item_Medkit.png"},{"name":"Chonkplate","tag":"🔥 ESSENTIAL","image":"https://megabonk.org/images/Items/Item_Chonkplate.png"},{"name":"Clover","tag":"🍀 HIGH VALUE","image":"https://megabonk.org/images/Items/Item_Clover.png"},{"name":"Battery","tag":"⚡ HIGH VALUE","image":"https://megabonk.org/images/Items/Item_Battery.png"},{"name":"Gym Sauce","tag":"💪 HIGH VALUE","image":"https://megabonk.org/images/Items/Item_Gym_Sauce.png"},{"name":"Golden Shield","tag":"💰 ECONOMY","image":"https://megabonk.org/images/Items/Item_Golden_Shield.png"}]},{"url":"https://megabonk.org/guides/builds/bandit-best-build","characterName":"Bandit","buildTitle":"🔫 Bandit Gold Rush","tier":"⭐ A-TIER","characterImage":"https://megabonk.org/images/guides/characters/Bandit.png","coreWeapons":[{"name":"Dexecutioner","tag":"CORE","image":"https://megabonk.org/images/database/weapons/Dexecutioner.png"},{"name":"Katana","tag":"CORE","image":"https://megabonk.org/images/database/weapons/Katana.png"},{"name":"Flamewalker","tag":"UTILITY","image":"https://megabonk.org/images/database/weapons/Flamewalker.png"},{"name":"Dice (optional)","tag":"NUKE","image":"https://megabonk.org/images/database/weapons/Dice.png"},{"name":"Black Hole","tag":"CORE","image":"https://megabonk.org/images/database/weapons/Black_Hole.png"},{"name":"Dexecutioner (starter)","tag":"FLEX","image":"https://megabonk.org/images/database/weapons/Dexecutioner.png"},{"name":"Dice (Support)","tag":"NUKE","image":"https://megabonk.org/images/database/weapons/Dice.png"}],"tomePriority":[{"name":"Size","tag":"#1","image":"https://megabonk.org/images/Tomes/Size_Tome.png"},{"name":"Cooldown","tag":"#2","image":"https://megabonk.org/images/Tomes/Cooldown_Tome.png"},{"name":"Damage","tag":"#3","image":"https://megabonk.org/images/Tomes/Damage_Tome.png"},{"name":"XP","tag":"Early","image":"https://megabonk.org/images/Tomes/XP_Tome.png"},{"name":"Luck","tag":"Early","image":"https://megabonk.org/images/Tomes/Luck_Tome.png"},{"name":"Quantity","tag":"#2","image":"https://megabonk.org/images/Tomes/Quantity_Tome.png"},{"name":"Duration","tag":"#4","image":"https://megabonk.org/images/Tomes/Duration_Tome.png"}],"keyItems":[{"name":"Joe’s Dagger","tag":"CORE","image":"https://megabonk.org/images/Items/Item_Joes_Dagger.png"},{"name":"Overpowered Lamp","tag":"CORE","image":"https://megabonk.org/images/Items/Item_Overpowered_Lamp.png"},{"name":"Moldy Cheese","tag":"PROC","image":"https://megabonk.org/images/Items/Item_Moldy_Cheese.png"},{"name":"Ice Crystal","tag":"CONTROL","image":"https://megabonk.org/images/Items/Item_Ice_Crystal.png"},{"name":"Lightning Orb","tag":"FLEX","image":"https://megabonk.org/images/Items/Item_Lightning_Orb.png"}]},{"url":"https://megabonk.org/guides/builds/tony-mczoom-best-build","characterName":"Tony McZoom","buildTitle":"🏎️ Tony McZoom Hyperspeed","tier":"⚡ SPEED META","characterImage":"https://megabonk.org/images/guides/characters/Tony_McZoom.png","coreWeapons":[{"name":"Wireless Dagger","tag":"CORE","image":"https://megabonk.org/images/database/weapons/Wireless_Dagger.png"},{"name":"Lightning Staff","tag":"CLEAR","image":"https://megabonk.org/images/database/weapons/Lightning_Staff.png"},{"name":"Revolver","tag":"BOSS","image":"https://megabonk.org/images/database/weapons/Revolver.png"},{"name":"Aegis","tag":"SAFETY","image":"https://megabonk.org/images/database/weapons/Aegis.png"}],"tomePriority":[{"name":"Projectile","tag":"#1","image":"https://megabonk.org/images/Tomes/Projectile_Speed_Tome.png"},{"name":"Quantity","tag":"#2","image":"https://megabonk.org/images/Tomes/Quantity_Tome.png"},{"name":"Damage","tag":"#3","image":"https://megabonk.org/images/Tomes/Damage_Tome.png"},{"name":"Precision","tag":"#4","image":"https://megabonk.org/images/Tomes/Precision_Tome.png"},{"name":"HP","tag":"SAFETY","image":"https://megabonk.org/images/Tomes/Health_Tome.png"},{"name":"Regen","tag":"SAFETY","image":"https://megabonk.org/images/Tomes/Regen_Tome.png"}],"keyItems":[{"name":"Turbo Socks","tag":"SPEED","image":"https://megabonk.org/images/Items/Item_Turbo_Socks.png"},{"name":"Turbo Skates","tag":"SPEED → DPS","image":"https://megabonk.org/images/Items/Item_Turbo_Skates.png"},{"name":"Battery","tag":"UPTIME","image":"https://megabonk.org/images/Items/Item_Battery.png"},{"name":"Sucky Magnet","tag":"XP FLOW","image":"https://megabonk.org/images/Items/Item_Sucky_Magnet.png"},{"name":"Golden Sneakers","tag":"ECON","image":"https://megabonk.org/images/Items/Item_Golden_Sneakers.png"},{"name":"Speed Boi","tag":"BURST","image":"https://megabonk.org/images/Items/Item_Speed_Boi.png"}]},{"url":"https://megabonk.org/guides/builds/sir-chadwell-best-build","characterName":"Sir Chadwell","buildTitle":"⚔️ Sir Chadwell Knight","tier":"🛡️ DEFENSE","characterImage":"https://megabonk.org/images/guides/characters/Sir_Chadwell.png","coreWeapons":[{"name":"Dexecutioner","tag":"CORE","image":"https://megabonk.org/images/database/weapons/Dexecutioner.png"},{"name":"Bananarang","tag":"CORE","image":"https://megabonk.org/images/database/weapons/Bananarang.png"},{"name":"Flamewalker","tag":"CLEAR","image":"https://megabonk.org/images/database/weapons/Flamewalker.png"},{"name":"Corrupted Sword","tag":"CORE","image":"https://megabonk.org/images/database/weapons/CorruptedSword.png"},{"name":"Aura","tag":"ALT","image":"https://megabonk.org/images/database/weapons/Aura.png"},{"name":"Katana","tag":"ALT","image":"https://megabonk.org/images/database/weapons/Katana.png"},{"name":"Aegis","tag":"SAFETY","image":"https://megabonk.org/images/database/weapons/Aegis.png"}],"tomePriority":[{"name":"Size","tag":"#1","image":"https://megabonk.org/images/Tomes/Size_Tome.png"},{"name":"Damage","tag":"#2","image":"https://megabonk.org/images/Tomes/Damage_Tome.png"},{"name":"XP","tag":"SNOWBALL","image":"https://megabonk.org/images/Tomes/XP_Tome.png"},{"name":"Luck","tag":"QUALITY","image":"https://megabonk.org/images/Tomes/Luck_Tome.png"},{"name":"Quantity","tag":"LATE","image":"https://megabonk.org/images/Tomes/Quantity_Tome.png"}],"keyItems":[{"name":"Moldy Cheese","tag":"POISON","image":"https://megabonk.org/images/Items/Item_Moldy_Cheese.png"},{"name":"Turbo Socks","tag":"MOBILITY","image":"https://megabonk.org/images/Items/Item_Turbo_Socks.png"},{"name":"Gym Sauce","tag":"DAMAGE","image":"https://megabonk.org/images/Items/Item_Gym_Sauce.png"}]},{"url":"https://megabonk.org/guides/builds/calcium-best-build","characterName":"Calcium","buildTitle":"💀 Calcium Speed Demon","tier":"⚡ SPEED META","characterImage":"https://megabonk.org/images/guides/characters/Calcium.png","coreWeapons":[{"name":"Bone","tag":"CORE","image":"https://megabonk.org/images/database/weapons/Bone.png"},{"name":"Bananarang","tag":"ESSENTIAL","image":"https://megabonk.org/images/database/weapons/Bananarang.png"},{"name":"Flamewalker","tag":"ALTERNATIVE","image":"https://megabonk.org/images/database/weapons/Flamewalker.png"},{"name":"Lightning Staff","tag":"UTILITY","image":"https://megabonk.org/images/database/weapons/Lightning_Staff.png"}],"tomePriority":[{"name":"Popular Early Package","tag":"OPTIONAL","image":"https://megabonk.org/images/Tomes/XP_Tome.png"},{"name":"Agility Tome","tag":"TOP PRIORITY","image":"https://megabonk.org/images/Tomes/Agility_Tome.png"},{"name":"Cooldown Tome","tag":"ESSENTIAL","image":"https://megabonk.org/images/Tomes/Cooldown_Tome.png"},{"name":"Quantity Tome","tag":"ESSENTIAL","image":"https://megabonk.org/images/Tomes/Quantity_Tome.png"},{"name":"Projectile Speed","tag":"SITUATIONAL","image":"https://megabonk.org/images/Tomes/Projectile_Speed_Tome.png"},{"name":"Damage Tome","tag":"MID–LATE","image":"https://megabonk.org/images/Tomes/Damage_Tome.png"}],"keyItems":[{"name":"Turbo Socks","tag":"TOP PRIORITY","image":"https://megabonk.org/images/Items/Item_Turbo_Socks.png"},{"name":"Coward’s Cloak","tag":"UTILITY","image":"https://megabonk.org/images/Items/Item_Cowards_Cloak.png"},{"name":"Slippery Ring","tag":"EVASION","image":"https://megabonk.org/images/Items/Item_Slippery_Ring.png"},{"name":"Phantom Shroud","tag":"SYNERGY","image":"https://megabonk.org/images/Items/Item_Phantom_Shroud.png"},{"name":"Battery","tag":"ATTACK SPEED","image":"https://megabonk.org/images/Items/Item_Battery.png"},{"name":"Turbo Skates","tag":"CONVERSION","image":"https://megabonk.org/images/Items/Item_Turbo_Skates.png"},{"name":"Lightning Orb","tag":"CONTROL","image":"https://megabonk.org/images/Items/Item_Lightning_Orb.png"},{"name":"Power Gloves","tag":"ON-HIT AoE","image":"https://megabonk.org/images/Items/Item_Power_Gloves.png"},{"name":"Golden Sneakers","tag":"ECONOMY","image":"https://megabonk.org/images/Items/Item_Golden_Sneakers.png"},{"name":"Scarf","tag":"SITUATIONAL DPS","image":"https://megabonk.org/images/Items/Item_Scarf.png"}]},{"url":"https://megabonk.org/guides/builds/cl4nk-best-build","characterName":"CL4NK","buildTitle":"🤖 CL4NK Bullet Hell","tier":"⭐ A-TIER","characterImage":"https://megabonk.org/images/guides/characters/CL4NK.png","coreWeapons":[{"name":"Revolver","tag":"Core","image":"https://megabonk.org/images/database/weapons/Revolver.png"},{"name":"Bow","tag":"Pierce","image":"https://megabonk.org/images/database/weapons/Bow.png"},{"name":"Bananarang","tag":"Crowd","image":"https://megabonk.org/images/database/weapons/Bananarang.png"},{"name":"Bone","tag":"Alt","image":"https://megabonk.org/images/database/weapons/Bone.png"}],"tomePriority":[{"name":"Early Scaling: XP -> Luck -> Cursed","tag":"Common","image":"https://megabonk.org/images/Tomes/XP_Tome.png"},{"name":"Quantity Tome","tag":"Top","image":"https://megabonk.org/images/Tomes/Quantity_Tome.png"},{"name":"Precision Tome","tag":"Crit Chance","image":"https://megabonk.org/images/Tomes/Precision_Tome.png"},{"name":"Projectile Speed Tome","tag":"Reliability","image":"https://megabonk.org/images/Tomes/Projectile_Speed_Tome.png"},{"name":"Cooldown Tome","tag":"Recommended","image":"https://megabonk.org/images/Tomes/Cooldown_Tome.png"},{"name":"Damage Tome","tag":"Late","image":"https://megabonk.org/images/Tomes/Damage_Tome.png"}],"keyItems":[{"name":"Tactical Glasses","tag":"Early Amp","image":"https://megabonk.org/images/Items/Item_Tactical_Glasses.png"},{"name":"Battery","tag":"Attack Speed","image":"https://megabonk.org/images/Items/Item_Battery.png"},{"name":"Power Gloves","tag":"AOE On Hit","image":"https://megabonk.org/images/Items/Item_Power_Gloves.png"},{"name":"Gym Sauce","tag":"Damage","image":"https://megabonk.org/images/Items/Item_Gym_Sauce.png"},{"name":"Demonic Soul","tag":"Scaling","image":"https://megabonk.org/images/Items/Item_Demonic_Soul.png"},{"name":"Boss Buster","tag":"Boss","image":"https://megabonk.org/images/Items/Item_Boss_Buster.png"},{"name":"Clover","tag":"Luck","image":"https://megabonk.org/images/Items/Item_Clover.png"},{"name":"Eagle Claw","tag":"Situational","image":"https://megabonk.org/images/Items/Item_Eagle_Claw.png"}]},{"url":"https://megabonk.org/guides/builds/monke-best-build","characterName":"Monke","buildTitle":"🐵 Monke Banana Chaos","tier":"⭐ A-TIER","characterImage":"https://megabonk.org/images/guides/characters/Monke.png","coreWeapons":[{"name":"Bananarang","tag":"Core","image":"https://megabonk.org/images/database/weapons/Bananarang.png"},{"name":"Revolver","tag":"Finisher","image":"https://megabonk.org/images/database/weapons/Revolver.png"},{"name":"Bow","tag":"Alternative","image":"https://megabonk.org/images/database/weapons/Bow.png"},{"name":"Aura","tag":"Defense","image":"https://megabonk.org/images/database/weapons/Aura.png"},{"name":"Aegis (Weapon)","tag":"Option","image":"https://megabonk.org/images/database/weapons/Aegis.png"}],"tomePriority":[{"name":"Quantity Tome","tag":"Top Priority","image":"https://megabonk.org/images/Tomes/Quantity_Tome.png"},{"name":"Projectile Tome (Speed)","tag":"Essential","image":"https://megabonk.org/images/Tomes/Projectile_Speed_Tome.png"},{"name":"Cooldown Tome","tag":"Recommended","image":"https://megabonk.org/images/Tomes/Cooldown_Tome.png"},{"name":"Damage Tome","tag":"Mid-Late","image":"https://megabonk.org/images/Tomes/Damage_Tome.png"},{"name":"Experience Tome","tag":"Utility","image":"https://megabonk.org/images/Tomes/XP_Tome.png"},{"name":"Luck Tome","tag":"Optional","image":"https://megabonk.org/images/Tomes/Luck_Tome.png"}],"keyItems":[{"name":"Battery","tag":"Top Priority","image":"https://megabonk.org/images/Items/Item_Battery.png"},{"name":"Turbo Socks","tag":"Mobility","image":"https://megabonk.org/images/Items/Item_Turbo_Socks.png"},{"name":"Mirror","tag":"Defense","image":"https://megabonk.org/images/Items/Item_Mirror.png"},{"name":"Gym Sauce","tag":"Damage","image":"https://megabonk.org/images/Items/Item_Gym_Sauce.png"},{"name":"Forbidden Juice","tag":"Crit Route","image":"https://megabonk.org/images/Items/Item_Forbidden_Juice.png"},{"name":"Clover","tag":"Utility","image":"https://megabonk.org/images/Items/Item_Clover.png"},{"name":"Turbo Skates","tag":"Conditional","image":"https://megabonk.org/images/Items/Item_Turbo_Skates.png"},{"name":"Power Gloves","tag":"On-Hit","image":"https://megabonk.org/images/Items/Item_Power_Gloves.png"}]},{"url":"https://megabonk.org/guides/builds/bush-best-build","characterName":"Bush","buildTitle":"🌳 Bush Stealth Ambush","tier":"⭐ B-TIER","characterImage":"https://megabonk.org/images/guides/characters/Bush.png","coreWeapons":[{"name":"Sniper Rifle","tag":"CORE","image":"https://megabonk.org/images/database/weapons/Sniper.png"},{"name":"Bow","tag":"ESSENTIAL","image":"https://megabonk.org/images/database/weapons/Bow.png"},{"name":"Revolver","tag":"SUPPORT","image":"https://megabonk.org/images/database/weapons/Revolver.png"},{"name":"Aegis (Weapon)","tag":"DEFENSE","image":"https://megabonk.org/images/database/weapons/Aegis.png"}],"tomePriority":[{"name":"Early Loop (Community)","tag":"POPULAR","image":"https://megabonk.org/images/Tomes/XP_Tome.png"},{"name":"Precision","tag":"HIGH","image":"https://megabonk.org/images/Tomes/Precision_Tome.png"},{"name":"Quantity","tag":"HIGH","image":"https://megabonk.org/images/Tomes/Quantity_Tome.png"},{"name":"Projectile Speed","tag":"GOOD","image":"https://megabonk.org/images/Tomes/Projectile_Speed_Tome.png"},{"name":"Cooldown","tag":"GOOD","image":"https://megabonk.org/images/Tomes/Cooldown_Tome.png"},{"name":"Damage","tag":"LATE","image":"https://megabonk.org/images/Tomes/Damage_Tome.png"}],"keyItems":[{"name":"Tactical Glasses","tag":"CORE","image":"https://megabonk.org/images/Items/Item_Tactical_Glasses.png"},{"name":"Boss Buster","tag":"BOSSING","image":"https://megabonk.org/images/Items/Item_Boss_Buster.png"},{"name":"Battery","tag":"ATTACK SPEED","image":"https://megabonk.org/images/Items/Item_Battery.png"},{"name":"Mirror","tag":"DEFENSE","image":"https://megabonk.org/images/Items/Item_Mirror.png"},{"name":"Clover","tag":"UTILITY","image":"https://megabonk.org/images/Items/Item_Clover.png"},{"name":"Eagle Claw","tag":"SITUATIONAL","image":"https://megabonk.org/images/Items/Item_Eagle_Claw.png"},{"name":"Power Gloves","tag":"ON-HIT","image":"https://megabonk.org/images/Items/Item_Power_Gloves.png"},{"name":"Thunder Mitts","tag":"ON-HIT","image":"https://megabonk.org/images/Items/Item_Thunder_Mitts.png"},{"name":"Time Bracelet","tag":"UTILITY","image":"https://megabonk.org/images/Items/Item_Time_Bracelet.png"}]},{"url":"https://megabonk.org/guides/builds/sir-oofie-best-build","characterName":"Sir Oofie","buildTitle":"⚔️ Sir Oofie Sword Master","tier":"⭐ A-TIER","characterImage":"https://megabonk.org/images/guides/characters/Sir_Oofie.png","coreWeapons":[{"name":"Sword","tag":"CORE","image":"https://megabonk.org/images/database/weapons/Sword.png"},{"name":"Aegis","tag":"DEFENSE","image":"https://megabonk.org/images/database/weapons/Aegis.png"},{"name":"Aura","tag":"AOE","image":"https://megabonk.org/images/database/weapons/Aura.png"}],"tomePriority":[{"name":"Community Opener","tag":"FLEX","image":"https://megabonk.org/images/Tomes/XP_Tome.png"},{"name":"Size Tome","tag":"TOP","image":"https://megabonk.org/images/Tomes/Size_Tome.png"},{"name":"Quantity Tome","tag":"CORE","image":"https://megabonk.org/images/Tomes/Quantity_Tome.png"},{"name":"Damage Tome","tag":"RECOMMENDED","image":"https://megabonk.org/images/Tomes/Damage_Tome.png"},{"name":"Shield Tome","tag":"SAFETY","image":"https://megabonk.org/images/Tomes/Shield_Tome.png"},{"name":"Cooldown Tome","tag":"LATER","image":"https://megabonk.org/images/Tomes/Cooldown_Tome.png"}],"keyItems":[{"name":"Idle Juice","tag":"BUILD-DEFINING","image":"https://megabonk.org/images/Items/Item_Idle_Juice.png"},{"name":"Battery","tag":"ATTACK SPEED","image":"https://megabonk.org/images/Items/Item_Battery.png"},{"name":"Mirror","tag":"UTILITY","image":"https://megabonk.org/images/Items/Item_Mirror.png"},{"name":"Power Gloves","tag":"ON-HIT","image":"https://megabonk.org/images/Items/Item_Power_Gloves.png"},{"name":"Demonic Soul","tag":"SCALING","image":"https://megabonk.org/images/Items/Item_Demonic_Soul.png"},{"name":"Chonkplate","tag":"SUSTAIN","image":"https://megabonk.org/images/Items/Item_Chonkplate.png"},{"name":"Gym Sauce","tag":"DAMAGE","image":"https://megabonk.org/images/Items/Item_Gym_Sauce.png"},{"name":"Thunder Mitts","tag":"ON-HIT","image":"https://megabonk.org/images/Items/Item_Thunder_Mitts.png"},{"name":"Time Bracelet","tag":"ECON/XP","image":"https://megabonk.org/images/Items/Item_Time_Bracelet.png"},{"name":"Golden Shield","tag":"ECON","image":"https://megabonk.org/images/Items/Item_Golden_Shield.png"}]},{"url":"https://megabonk.org/guides/builds/athena-best-build","characterName":"Athena","buildTitle":"🛡️ Athena Divine Shield","tier":"⭐ S-TIER","characterImage":"https://megabonk.org/images/guides/characters/Athena.png","coreWeapons":[{"name":"Aegis","tag":"CORE","image":"https://megabonk.org/images/database/weapons/Aegis.png"},{"name":"Lightning Staff","tag":"WAVE CLEAR","image":"https://megabonk.org/images/database/weapons/Lightning_Staff.png"},{"name":"Bananarang","tag":"MOBILE DPS","image":"https://megabonk.org/images/database/weapons/Bananarang.png"},{"name":"Revolver","tag":"FLEX","image":"https://megabonk.org/images/database/weapons/Revolver.png"}],"tomePriority":[{"name":"Early Snowball","tag":"OPTIONAL","image":"https://megabonk.org/images/Tomes/XP_Tome.png"},{"name":"Cooldown","tag":"TOP PRIORITY","image":"https://megabonk.org/images/Tomes/Cooldown_Tome.png"},{"name":"Agility","tag":"ESSENTIAL","image":"https://megabonk.org/images/Tomes/Agility_Tome.png"},{"name":"Precision","tag":"PATH A","image":"https://megabonk.org/images/Tomes/Precision_Tome.png"},{"name":"Quantity","tag":"PATH B","image":"https://megabonk.org/images/Tomes/Quantity_Tome.png"},{"name":"Damage","tag":"LATE MULTIPLIER","image":"https://megabonk.org/images/Tomes/Damage_Tome.png"}],"keyItems":[{"name":"Turbo Socks","tag":"TOP PRIORITY","image":"https://megabonk.org/images/Items/Item_Turbo_Socks.png"},{"name":"Battery","tag":"CORE AS","image":"https://megabonk.org/images/Items/Item_Battery.png"},{"name":"Turbo Skates","tag":"AS CONVERTER","image":"https://megabonk.org/images/Items/Item_Turbo_Skates.png"},{"name":"Mirror","tag":"SAFETY","image":"https://megabonk.org/images/Items/Item_Mirror.png"},{"name":"Slippery Ring","tag":"EVASION","image":"https://megabonk.org/images/Items/Item_Slippery_Ring.png"},{"name":"Phantom Shroud","tag":"ON DODGE","image":"https://megabonk.org/images/Items/Item_Phantom_Shroud.png"},{"name":"Power Gloves","tag":"UTILITY","image":"https://megabonk.org/images/Items/Item_Power_Gloves.png"},{"name":"Thunder Mitts / Time Bracelet","tag":"NOT AS","image":"https://megabonk.org/images/Items/Item_Thunder_Mitts.png"}]},{"url":"https://megabonk.org/guides/builds/ogre-best-build","characterName":"Ogre","buildTitle":"👹 Ogre Brute Force","tier":"⭐ A-TIER","characterImage":"https://megabonk.org/images/guides/characters/Ogre.png","coreWeapons":[{"name":"Axe","tag":"CORE","image":"https://megabonk.org/images/database/weapons/Axe.png"},{"name":"Aura","tag":"COVERAGE","image":"https://megabonk.org/images/database/weapons/Aura.png"},{"name":"Lightning Staff","tag":"CHAIN","image":"https://megabonk.org/images/database/weapons/Lightning_Staff.png"},{"name":"Sword (Alternative)","tag":"ALT","image":"https://megabonk.org/images/database/weapons/Sword.png"}],"tomePriority":[{"name":"Early Economy (Optional)","tag":"UTILITY","image":"https://megabonk.org/images/Tomes/XP_Tome.png"},{"name":"Damage","tag":"CORE","image":"https://megabonk.org/images/Tomes/Damage_Tome.png"},{"name":"Quantity","tag":"MAJOR","image":"https://megabonk.org/images/Tomes/Quantity_Tome.png"},{"name":"Cooldown","tag":"MAJOR","image":"https://megabonk.org/images/Tomes/Cooldown_Tome.png"},{"name":"Size","tag":"MAJOR","image":"https://megabonk.org/images/Tomes/Size_Tome.png"},{"name":"Shield","tag":"OPTIONAL","image":"https://megabonk.org/images/Tomes/Shield_Tome.png"}],"keyItems":[{"name":"Gym Sauce","tag":"DAMAGE","image":"https://megabonk.org/images/Items/Item_Gym_Sauce.png"},{"name":"Demonic Soul","tag":"STACKING","image":"https://megabonk.org/images/Items/Item_Demonic_Soul.png"},{"name":"Power Gloves","tag":"ON-HIT","image":"https://megabonk.org/images/Items/Item_Power_Gloves.png"},{"name":"Idle Juice","tag":"STANCE","image":"https://megabonk.org/images/Items/Item_Idle_Juice.png"},{"name":"Mirror","tag":"DEFENSE","image":"https://megabonk.org/images/Items/Item_Mirror.png"},{"name":"Chonkplate","tag":"SUSTAIN","image":"https://megabonk.org/images/Items/Item_Chonkplate.png"},{"name":"Lightning Orb","tag":"STUN","image":"https://megabonk.org/images/Items/Item_Lightning_Orb.png"}]},{"url":"https://megabonk.org/guides/builds/amog-best-build","characterName":"Amog","buildTitle":"🔪 Amog Impostor Build","tier":"🎭 MEME META","characterImage":"https://megabonk.org/images/guides/characters/Amog.png","coreWeapons":[{"name":"Poison Flask","tag":"CORE","image":"https://megabonk.org/images/database/weapons/Poison_Flask.png"},{"name":"Black Hole","tag":"GROUPING","image":"https://megabonk.org/images/database/weapons/Black_Hole.png"},{"name":"Flamewalker","tag":"SUSTAINED AOE","image":"https://megabonk.org/images/database/weapons/Flamewalker.png"}],"tomePriority":[{"name":"Early Curve: XP → Luck → Cursed","tag":"RUSH","image":"https://megabonk.org/images/Tomes/XP_Tome.png"},{"name":"Bloody Tome (Lifesteal)","tag":"SUSTAIN","image":"https://megabonk.org/images/Tomes/Bloody_Tome.png"},{"name":"Cooldown Tome","tag":"FASTER STACKS","image":"https://megabonk.org/images/Tomes/Cooldown_Tome.png"},{"name":"Damage Tome","tag":"MULTIPLIER","image":"https://megabonk.org/images/Tomes/Damage_Tome.png"},{"name":"Quantity / Size (Situational)","tag":"OPTIONAL","image":"https://megabonk.org/images/Tomes/Quantity_Tome.png"}],"keyItems":[{"name":"Moldy Cheese","tag":"POISON CORE","image":"https://megabonk.org/images/Items/Item_Moldy_Cheese.png"},{"name":"Battery","tag":"ATTACK SPEED","image":"https://megabonk.org/images/Items/Item_Battery.png"},{"name":"Mirror","tag":"SAFETY","image":"https://megabonk.org/images/Items/Item_Mirror.png"},{"name":"Demonic Soul","tag":"SCALING","image":"https://megabonk.org/images/Items/Item_Demonic_Soul.png"},{"name":"Chonkplate","tag":"SUSTAIN","image":"https://megabonk.org/images/Items/Item_Chonkplate.png"},{"name":"Gas Mask / Toxic Barrel","tag":"SYNERGY","image":"https://megabonk.org/images/Items/Item_Gas_Mask.png"}]},{"url":"https://megabonk.org/guides/builds/spaceman-best-build","characterName":"Spaceman","buildTitle":"🚀 Spaceman Orbital Strike","tier":"⭐ A-TIER","characterImage":"https://megabonk.org/images/guides/characters/Spaceman.png","coreWeapons":[{"name":"Black Hole","tag":"CORE","image":"https://megabonk.org/images/database/weapons/Black_Hole.png"},{"name":"Aura","tag":"AOE","image":"https://megabonk.org/images/database/weapons/Aura.png"},{"name":"Lightning Staff","tag":"CHAIN","image":"https://megabonk.org/images/database/weapons/Lightning_Staff.png"}],"tomePriority":[{"name":"XP Tome","tag":"LEVELING","image":"https://megabonk.org/images/Tomes/XP_Tome.png"},{"name":"Quantity Tome","tag":"PROJECTILES","image":"https://megabonk.org/images/Tomes/Quantity_Tome.png"},{"name":"Cooldown Tome","tag":"UPTIME","image":"https://megabonk.org/images/Tomes/Cooldown_Tome.png"},{"name":"Projectile Speed Tome","tag":"ALTERNATIVE","image":"https://megabonk.org/images/Tomes/Projectile_Speed_Tome.png"},{"name":"Damage Tome","tag":"LATE GAME","image":"https://megabonk.org/images/Tomes/Damage_Tome.png"},{"name":"Cursed Tome","tag":"OPTIONAL","image":"https://megabonk.org/images/Tomes/Cursed_Tome.png"}],"keyItems":[{"name":"Battery","tag":"ATTACK SPEED","image":"https://megabonk.org/images/Items/Item_Battery.png"},{"name":"Mirror","tag":"DEFENSE","image":"https://megabonk.org/images/Items/Item_Mirror.png"},{"name":"Demonic Soul","tag":"SCALING","image":"https://megabonk.org/images/Items/Item_Demonic_Soul.png"},{"name":"Clover","tag":"CONSISTENCY","image":"https://megabonk.org/images/Items/Item_Clover.png"},{"name":"Credit Card (Green)","tag":"LOOT LUCK","image":"https://megabonk.org/images/Items/Item_Credit_Card_Green.png"},{"name":"Power Gloves","tag":"ON-HIT","image":"https://megabonk.org/images/Items/Item_Power_Gloves.png"},{"name":"Thunder Mitts","tag":"ON-HIT","image":"https://megabonk.org/images/Items/Item_Thunder_Mitts.png"},{"name":"Time Bracelet","tag":"XP","image":"https://megabonk.org/images/Items/Item_Time_Bracelet.png"}]},{"url":"https://megabonk.org/guides/builds/vlad-best-build","characterName":"Vlad","buildTitle":"🧛 Vlad Vampire Lord","tier":"🩸 LIFESTEAL META","characterImage":"https://megabonk.org/images/guides/characters/Vlad.png","coreWeapons":[{"name":"Blood Magic","tag":"CORE","image":"https://megabonk.org/images/database/weapons/Blood_Magic.png"},{"name":"Sword","tag":"MELEE DPS","image":"https://megabonk.org/images/database/weapons/Sword.png"},{"name":"Katana","tag":"ALTERNATIVE","image":"https://megabonk.org/images/database/weapons/Katana.png"},{"name":"Aura","tag":"CONSTANT HITS","image":"https://megabonk.org/images/database/weapons/Aura.png"},{"name":"Aegis (Weapon Option)","tag":"DEFENSIVE WEAPON","image":"https://megabonk.org/images/database/weapons/Aegis.png"}],"tomePriority":[{"name":"Early Economy: XP → Luck → Cursed","tag":"RECOMMENDED","image":"https://megabonk.org/images/Tomes/XP_Tome.png"},{"name":"Bloody Tome (Lifegain)","tag":"TOP PRIORITY","image":"https://megabonk.org/images/Tomes/Bloody_Tome.png"},{"name":"Cooldown Tome","tag":"ESSENTIAL","image":"https://megabonk.org/images/Tomes/Cooldown_Tome.png"},{"name":"Damage Tome","tag":"ESSENTIAL","image":"https://megabonk.org/images/Tomes/Damage_Tome.png"},{"name":"Size Tome","tag":"OPTIONAL","image":"https://megabonk.org/images/Tomes/Size_Tome.png"},{"name":"Quantity Tome","tag":"SITUATIONAL","image":"https://megabonk.org/images/Tomes/Quantity_Tome.png"}],"keyItems":[{"name":"Slurp Gloves","tag":"SUSTAIN","image":"https://megabonk.org/images/Items/Item_Slurp_Gloves.png"},{"name":"Battery","tag":"ATTACK SPEED","image":"https://megabonk.org/images/Items/Item_Battery.png"},{"name":"Mirror","tag":"DEFENSE","image":"https://megabonk.org/images/Items/Item_Mirror.png"},{"name":"Chonkplate","tag":"TRADE-OFF","image":"https://megabonk.org/images/Items/Item_Chonkplate.png"},{"name":"Demonic Blade","tag":"ON-CRIT HEAL","image":"https://megabonk.org/images/Items/Item_Demonic_Blade.png"},{"name":"Gym Sauce","tag":"DAMAGE","image":"https://megabonk.org/images/Items/Item_Gym_Sauce.png"}]}]</script>
+  <script>
+    const builds = JSON.parse(document.getElementById("build-data").textContent);
+    const cardsElement = document.getElementById("cards");
+    const jumpBarElement = document.getElementById("jump-bar");
+    const resultCountElement = document.getElementById("result-count");
+    const searchInput = document.getElementById("character-search");
+
+    const escapeHtml = (value) => String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/\"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+
+    const stripLeadingDecoration = (value) => String(value ?? "").replace(/^[^\p{L}\p{N}]+/u, "").trim();
+
+    const baseCharacterName = (value) => stripLeadingDecoration(String(value ?? "").replace(/\s*\(.+?\)/g, "").replace(/\s+/g, " "));
+
+    const deriveBuildLabel = (characterName, buildTitle) => {
+      const cleanedTitle = stripLeadingDecoration(buildTitle);
+      const cleanedName = baseCharacterName(characterName);
+
+      if (!cleanedTitle) {
+        return "";
+      }
+
+      if (cleanedName && cleanedTitle.toLowerCase().startsWith(cleanedName.toLowerCase())) {
+        const remainder = cleanedTitle.slice(cleanedName.length).trim();
+        return remainder || cleanedTitle;
+      }
+
+      return cleanedTitle;
+    };
+
+    const toAnchor = (value) => stripLeadingDecoration(value)
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+
+    const allEntryText = (items) => items.flatMap((item) => [item.name, item.tag].filter(Boolean)).join(" ");
+
+    const hasLeadingIcon = (tag) => /^(?:[\p{Extended_Pictographic}★☆⭐✨🔥⚡🎯🛡📚🎁💥🍀⏱🔄💰❤️🧲🌀❄☠📈🩸🪞💪📦🗡⚔])/u.test(tag.trim());
+
+    const fallbackTagIcon = (rowLabel) => {
+      if (rowLabel === 'Core Weapons') {
+        return '⚔️';
+      }
+
+      if (rowLabel === 'Tome Priority') {
+        return '📚';
+      }
+
+      return '🎁';
+    };
+
+    const pickTagIcon = (tag, rowLabel) => {
+      const value = String(tag ?? '').toLowerCase();
+      const rules = [
+        [/core|mandatory|primary weapons?/, rowLabel === 'Core Weapons' ? '⚔️' : fallbackTagIcon(rowLabel)],
+        [/popular|high|top|essential/, '🔥'],
+        [/flex|alternative|optional|situational|filler|alt\b/, '🔄'],
+        [/early|tempo|opener|rush|foundation/, '⏱️'],
+        [/mid|late|scaling|snowball|recommended|copies/, '📈'],
+        [/survival|defen|shield|safety|utility|comfort/, '🛡️'],
+        [/economy|gold|coin|chest/, '💰'],
+        [/attack speed|\bas\b|cooldown|uptime/, '⚡'],
+        [/xp|level|vac/, '✨'],
+        [/luck/, '🍀'],
+        [/hp|heal|regen|sustain/, '❤️'],
+        [/damage|dps|blast|burst|crit/, '💥']
+      ];
+
+      for (const [pattern, icon] of rules) {
+        if (pattern.test(value)) {
+          return icon;
+        }
+      }
+
+      return fallbackTagIcon(rowLabel);
+    };
+
+    const formatTag = (tag, rowLabel) => {
+      const cleaned = String(tag ?? '').trim();
+      if (!cleaned) {
+        return '';
+      }
+
+      if (hasLeadingIcon(cleaned)) {
+        return cleaned;
+      }
+
+      return pickTagIcon(cleaned, rowLabel) + ' ' + cleaned;
+    };
+
+    const buildSearchText = (build) => [
+      build.characterName,
+      build.buildTitle,
+      build.tier,
+      allEntryText(build.coreWeapons || []),
+      allEntryText(build.tomePriority || []),
+      allEntryText(build.keyItems || [])
+    ].join(" ").toLowerCase();
+
+    const renderEntries = (items, rowLabel) => {
+      if (!items.length) {
+        return '<p class="empty-state">Not listed on the source page.</p>';
+      }
+
+      return items.map((item) => {
+        const formattedTag = formatTag(item.tag, rowLabel);
+        const tag = formattedTag ? '<span class="tag">' + escapeHtml(formattedTag) + '</span>' : '';
+        const summary = [item.name, formattedTag].filter(Boolean).join(' • ');
+        return '' +
+          '<article class="entry" title="' + escapeHtml(summary) + '">' +
+            '<img class="entry-icon" src="' + escapeHtml(item.image) + '" alt="' + escapeHtml(item.name) + '" loading="lazy">' +
+            '<div class="entry-copy">' +
+              '<span class="entry-name">' + escapeHtml(item.name) + '</span>' +
+              tag +
+            '</div>' +
+          '</article>';
+      }).join('');
+    };
+
+    const renderRow = (label, items) => {
+      return '' +
+        '<section class="info-row">' +
+          '<div class="row-label">' +
+            '<p class="row-name">' + escapeHtml(label) + '</p>' +
+          '</div>' +
+          '<div class="row-items">' + renderEntries(items, label) + '</div>' +
+        '</section>';
+    };
+
+    const renderCard = (build) => {
+      const anchor = toAnchor(build.characterName || build.buildTitle || build.url);
+      const buildLabel = deriveBuildLabel(build.characterName, build.buildTitle);
+      const tierPill = build.tier ? '<span class="tier-pill">' + escapeHtml(build.tier) + '</span>' : '';
+      const buildPill = buildLabel ? '<span class="build-pill">' + escapeHtml(buildLabel) + '</span>' : '';
+      return '' +
+        '<section class="character-card" id="' + escapeHtml(anchor) + '">' +
+          '<header class="card-header">' +
+            '<img class="character-avatar" src="' + escapeHtml(build.characterImage) + '" alt="' + escapeHtml(build.characterName) + '" loading="lazy">' +
+            '<div>' +
+              '<div class="card-title-row">' +
+                '<h2 class="card-title">' + escapeHtml(build.characterName) + '</h2>' +
+                tierPill +
+                buildPill +
+              '</div>' +
+            '</div>' +
+            '<a class="source-link" href="' + escapeHtml(build.url) + '">Original</a>' +
+          '</header>' +
+          '<div class="rows">' +
+            renderRow('Core Weapons', build.coreWeapons || []) +
+            renderRow('Tome Priority', build.tomePriority || []) +
+            renderRow('Key Items', build.keyItems || []) +
+          '</div>' +
+        '</section>';
+    };
+
+    const renderJumpBar = (items) => {
+      jumpBarElement.hidden = items.length === 0;
+
+      if (!items.length) {
+        jumpBarElement.innerHTML = '';
+        return;
+      }
+
+      jumpBarElement.innerHTML = items.map((build) => {
+        const anchor = toAnchor(build.characterName || build.buildTitle || build.url);
+        return '<a class="jump-link" href="#' + escapeHtml(anchor) + '">' +
+          '<img class="jump-icon" src="' + escapeHtml(build.characterImage) + '" alt="" loading="lazy">' +
+          '<span class="jump-link-label">' + escapeHtml(baseCharacterName(build.characterName)) + '</span>' +
+        '</a>';
+      }).join('');
+    };
+
+    const syncJumpBarOffset = () => {
+      const height = jumpBarElement.hidden ? 0 : Math.ceil(jumpBarElement.getBoundingClientRect().height);
+      document.documentElement.style.setProperty('--jump-bar-height', height + 'px');
+    };
+
+    const renderBuilds = (query = '') => {
+      const normalizedQuery = query.trim().toLowerCase();
+      const filtered = normalizedQuery
+        ? builds.filter((build) => buildSearchText(build).includes(normalizedQuery))
+        : builds;
+
+      resultCountElement.textContent = '';
+
+      renderJumpBar(filtered);
+      syncJumpBarOffset();
+
+      if (!filtered.length) {
+        cardsElement.innerHTML = '<div class="no-results">No characters or build entries match that search.</div>';
+        return;
+      }
+
+      cardsElement.innerHTML = filtered.map(renderCard).join('');
+    };
+
+    searchInput.addEventListener('input', (event) => {
+      renderBuilds(event.target.value);
+    });
+
+    window.addEventListener('resize', syncJumpBarOffset);
+
+    renderBuilds();
+  </script>
+</body>
+</html>
